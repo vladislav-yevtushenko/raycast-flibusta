@@ -1,70 +1,63 @@
 import { Action, ActionPanel, Icon, List, showToast, Toast } from "@raycast/api";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import * as cheerio from "cheerio";
-
-interface Book {
-  title: string;
-  author: string;
-  url: string;
-  formats: {
-    epub?: string;
-    fb2?: string;
-    mobi?: string;
-  };
-}
+import { Book, SearchStatus } from "./types";
+import { searchBooks } from "./services/flibustaService";
+import { BookListItem } from "./components/BookListItem";
 
 export default function Command() {
   const [searchText, setSearchText] = useState("");
   const [books, setBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [query, setQuery] = useState("");
+  const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
 
   useEffect(() => {
-    if (searchText.length > 0) {
-      searchBooks();
-    } else {
-      setBooks([]);
+    if (query) {
+      performSearch();
     }
-  }, [searchText]);
+  }, [query]);
 
-  async function searchBooks() {
+  async function performSearch() {
+    if (query.length === 0) {
+      setBooks([]);
+      setSearchStatus("idle");
+      return;
+    }
+
     setIsLoading(true);
+    setSearchStatus("searching");
+
+    await showToast({
+      style: Toast.Style.Animated,
+      title: "Searching...",
+      message: `Looking for "${query}"`,
+    });
+
     try {
-      const response = await axios.get(`https://flibusta.site/booksearch?ask=${encodeURIComponent(searchText)}`, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-        },
-      });
-
-      const $ = cheerio.load(response.data);
-      const results: Book[] = [];
-
-      $(".booksearch").each((_, element) => {
-        const titleElement = $(element).find("h3 a");
-        const title = titleElement.text().trim();
-        const url = titleElement.attr("href") || "";
-        const author = $(element).find("h3").text().replace(title, "").trim();
-
-        const formats: Book["formats"] = {};
-        $(element)
-          .find("a")
-          .each((_, formatElement) => {
-            const href = $(formatElement).attr("href") || "";
-            if (href.includes(".epub")) formats.epub = href;
-            if (href.includes(".fb2")) formats.fb2 = href;
-            if (href.includes(".mobi")) formats.mobi = href;
-          });
-
-        results.push({ title, author, url, formats });
-      });
-
+      const results = await searchBooks(query);
       setBooks(results);
+      
+      if (results.length > 0) {
+        setSearchStatus("found");
+        await showToast({
+          style: Toast.Style.Success,
+          title: "Found books",
+          message: `Found ${results.length} books for "${query}"`,
+        });
+      } else {
+        setSearchStatus("not_found");
+        await showToast({
+          style: Toast.Style.Failure,
+          title: "No results",
+          message: `No books found for "${query}"`,
+        });
+      }
     } catch (error) {
+      setSearchStatus("not_found");
       await showToast({
         style: Toast.Style.Failure,
         title: "Error",
-        message: "Failed to search books. Please try again.",
+        message: "Failed to search books. Please try again." + error,
       });
     } finally {
       setIsLoading(false);
@@ -76,42 +69,21 @@ export default function Command() {
       isLoading={isLoading}
       searchText={searchText}
       onSearchTextChange={setSearchText}
-      searchBarPlaceholder="Search for books..."
+      searchBarPlaceholder="Search for books... (Press Enter to search)"
+      actions={
+        <ActionPanel>
+          <Action.SubmitForm title="Search" onSubmit={() => setQuery(searchText)} />
+        </ActionPanel>
+      }
     >
+      {searchStatus === "searching" && (
+        <List.Item title="Searching..." subtitle={`Looking for "${query}"`} icon={Icon.CircleProgress} />
+      )}
+      {searchStatus === "not_found" && (
+        <List.Item title="No results found" subtitle={`Try a different search term`} icon={Icon.ExclamationMark} />
+      )}
       {books.map((book, index) => (
-        <List.Item
-          key={index}
-          title={book.title}
-          subtitle={book.author}
-          accessories={[
-            { text: Object.keys(book.formats).join(", ") },
-          ]}
-          actions={
-            <ActionPanel>
-              {book.formats.epub && (
-                <Action.OpenInBrowser
-                  title="Download EPUB"
-                  url={book.formats.epub}
-                  icon={Icon.Download}
-                />
-              )}
-              {book.formats.fb2 && (
-                <Action.OpenInBrowser
-                  title="Download FB2"
-                  url={book.formats.fb2}
-                  icon={Icon.Download}
-                />
-              )}
-              {book.formats.mobi && (
-                <Action.OpenInBrowser
-                  title="Download MOBI"
-                  url={book.formats.mobi}
-                  icon={Icon.Download}
-                />
-              )}
-            </ActionPanel>
-          }
-        />
+        <BookListItem key={index} book={book} />
       ))}
     </List>
   );
