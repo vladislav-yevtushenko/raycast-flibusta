@@ -1,0 +1,53 @@
+{
+  "name": "raycast-flibusta",
+  "version": "1.0.0",
+  "description": "Search and download books from Flibusta",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "raycast",
+    "flibusta",
+    "books",
+    "epub",
+    "fb2",
+    "mobi"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@raycast/api": "^1.55.2",
+    "axios": "^1.6.7",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.28",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "typescript": "^5.8.2"
+  },
+  "raycast": {
+    "title": "Flibusta Search",
+    "description": "Search and download books from Flibusta",
+    "icon": "command-icon.png",
+    "author": "vlad",
+    "categories": [
+      "Web Searches",
+      "Productivity"
+    ],
+    "license": "MIT",
+    "commands": [
+      {
+        "name": "index",
+        "title": "Search Books",
+        "description": "Search for books on Flibusta",
+        "mode": "view"
+      }
+    ]
+  }
+}
