@@ -1,53 +1,47 @@
 {
-  "name": "raycast-flibusta",
-  "version": "1.0.0",
-  "description": "Search and download books from Flibusta",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w",
-    "lint": "eslint . --ext .ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "raycast",
-    "flibusta",
-    "books",
-    "epub",
-    "fb2",
-    "mobi"
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "flibusta-search",
+  "title": "Flibusta Search",
+  "description": "",
+  "icon": "extension-icon.png",
+  "author": "VladYevt",
+  "categories": [
+    "Fun",
+    "Other"
   ],
-  "author": "",
   "license": "MIT",
+  "commands": [
+    {
+      "name": "flibusta",
+      "title": "flibusta",
+      "subtitle": "book",
+      "description": "Flibusta search",
+      "mode": "view"
+    }
+  ],
   "dependencies": {
-    "@raycast/api": "^1.55.2",
-    "axios": "^1.6.7",
-    "cheerio": "^1.0.0-rc.12"
+    "@raycast/api": "^1.94.2",
+    "@raycast/utils": "^1.19.1",
+    "axios": "^1.8.4",
+    "cheerio": "^1.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.17.28",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "eslint": "^8.57.1",
+    "@raycast/eslint-config": "^2.0.4",
+    "@types/node": "22.13.10",
+    "@types/react": "19.0.12",
+    "@types/react-dom": "19.0.4",
+    "eslint": "^9.22.0",
+    "prettier": "^3.5.3",
     "typescript": "^5.8.2"
   },
-  "raycast": {
-    "title": "Flibusta Search",
-    "description": "Search and download books from Flibusta",
-    "icon": "command-icon.png",
-    "author": "vlad",
-    "categories": [
-      "Web Searches",
-      "Productivity"
-    ],
-    "license": "MIT",
-    "commands": [
-      {
-        "name": "index",
-        "title": "Search Books",
-        "description": "Search for books on Flibusta",
-        "mode": "view"
-      }
-    ]
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
+    "publish": "npx @raycast/api@latest publish"
   }
 }

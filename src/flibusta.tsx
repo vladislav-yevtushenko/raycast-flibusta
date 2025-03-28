@@ -1,5 +1,5 @@
-import { List, ActionPanel, Action, showToast, Toast, Icon } from "@raycast/api";
-import { useState, useEffect } from "react";
+import { Action, ActionPanel, Icon, List, showToast, Toast } from "@raycast/api";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
@@ -32,7 +32,8 @@ export default function Command() {
     try {
       const response = await axios.get(`https://flibusta.site/booksearch?ask=${encodeURIComponent(searchText)}`, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
         },
       });
 
@@ -44,14 +45,16 @@ export default function Command() {
         const title = titleElement.text().trim();
         const url = titleElement.attr("href") || "";
         const author = $(element).find("h3").text().replace(title, "").trim();
-        
+
         const formats: Book["formats"] = {};
-        $(element).find("a").each((_, formatElement) => {
-          const href = $(formatElement).attr("href") || "";
-          if (href.includes(".epub")) formats.epub = href;
-          if (href.includes(".fb2")) formats.fb2 = href;
-          if (href.includes(".mobi")) formats.mobi = href;
-        });
+        $(element)
+          .find("a")
+          .each((_, formatElement) => {
+            const href = $(formatElement).attr("href") || "";
+            if (href.includes(".epub")) formats.epub = href;
+            if (href.includes(".fb2")) formats.fb2 = href;
+            if (href.includes(".mobi")) formats.mobi = href;
+          });
 
         results.push({ title, author, url, formats });
       });
@@ -71,6 +74,7 @@ export default function Command() {
   return (
     <List
       isLoading={isLoading}
+      searchText={searchText}
       onSearchTextChange={setSearchText}
       searchBarPlaceholder="Search for books..."
     >
@@ -111,4 +115,4 @@ export default function Command() {
       ))}
     </List>
   );
-} 
+}
