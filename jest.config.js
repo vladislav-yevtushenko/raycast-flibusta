@@ -6,4 +6,8 @@ module.exports = {
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
+  maxWorkers: 1,
+  workerIdleMemoryLimit: "512MB",
+  testTimeout: 10000,
+  setupFiles: ["<rootDir>/jest.setup.js"],
 }; 

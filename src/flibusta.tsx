@@ -1,12 +1,12 @@
 import { Action, ActionPanel, Icon, List, showToast, Toast } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { Book, SearchStatus } from "./types";
-import { searchBooks } from "./services/flibustaService";
+import { OpdsBook, SearchStatus } from "./types";
 import { BookListItem } from "./components/BookListItem";
+import { searchBooks } from "./services/opdsService";
 
 export default function Command() {
   const [searchText, setSearchText] = useState("");
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<OpdsBook[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
@@ -36,7 +36,7 @@ export default function Command() {
     try {
       const results = await searchBooks(query);
       setBooks(results);
-      
+
       if (results.length > 0) {
         setSearchStatus("found");
         await showToast({
