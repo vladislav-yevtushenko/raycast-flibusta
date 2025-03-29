@@ -1,8 +1,8 @@
 import axios from "axios";
-import { OpdsBook, OpdsSearchResponse } from "../types";
+import { OpdsBook } from "../types";
 import * as xml2js from "xml2js";
 
-const baseSiteUrl = "https://flibusta.site";
+export const baseSiteUrl = "https://flibusta.site";
 const defaultHeaders = {
   "User-Agent":
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
@@ -16,7 +16,7 @@ const parser = new xml2js.Parser({
 
 function parseOpdsBook(entry: any): OpdsBook {
   const downloadLinks: OpdsBook["downloadLinks"] = {};
-  
+
   // Parse download links
   if (Array.isArray(entry.link)) {
     entry.link.forEach((link: any) => {
@@ -30,7 +30,7 @@ function parseOpdsBook(entry: any): OpdsBook {
   }
 
   // Parse cover image
-  const coverLink = Array.isArray(entry.link) 
+  const coverLink = Array.isArray(entry.link)
     ? entry.link.find((link: any) => link.rel === "http://opds-spec.org/image")
     : null;
   const coverUrl = coverLink ? coverLink.href : undefined;
@@ -41,7 +41,7 @@ function parseOpdsBook(entry: any): OpdsBook {
       name: entry.author.name,
       uri: entry.author.uri,
     },
-    categories: Array.isArray(entry.category) 
+    categories: Array.isArray(entry.category)
       ? entry.category.map((cat: any) => ({
           term: cat.term,
           label: cat.label,
@@ -75,14 +75,3 @@ export async function searchBooks(query: string): Promise<OpdsBook[]> {
 
   return entries.map(parseOpdsBook);
 }
-
-export async function getAuthorBooks(authorUri: string): Promise<OpdsBook[]> {
-  const url = `${baseSiteUrl}${authorUri}`;
-  const xml = await fetchOpdsXml(url);
-  const result = await parser.parseStringPromise(xml);
-
-  const feed = result.feed;
-  const entries = Array.isArray(feed.entry) ? feed.entry : [feed.entry];
-
-  return entries.map(parseOpdsBook);
-} 
