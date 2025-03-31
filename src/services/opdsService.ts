@@ -2,6 +2,33 @@ import axios from "axios";
 import { OpdsBook } from "../types";
 import * as xml2js from "xml2js";
 
+interface OpdsLink {
+  rel: string;
+  href: string;
+  type?: string;
+}
+
+interface OpdsAuthor {
+  name: string;
+  uri: string;
+}
+
+interface OpdsCategory {
+  term: string;
+  label: string;
+}
+
+interface OpdsEntry {
+  title: string;
+  author: OpdsAuthor;
+  link: OpdsLink | OpdsLink[];
+  category: OpdsCategory | OpdsCategory[];
+  "dc:language": string;
+  "dc:format": string;
+  "dc:issued": string;
+  content: string;
+}
+
 export const baseSiteUrl = "https://flibusta.site";
 const defaultHeaders = {
   "User-Agent":
@@ -14,14 +41,14 @@ const parser = new xml2js.Parser({
   valueProcessors: [xml2js.processors.parseBooleans, xml2js.processors.parseNumbers],
 });
 
-function parseOpdsBook(entry: any): OpdsBook {
+function parseOpdsBook(entry: OpdsEntry): OpdsBook {
   const downloadLinks: OpdsBook["downloadLinks"] = {};
 
   // Parse download links
   if (Array.isArray(entry.link)) {
-    entry.link.forEach((link: any) => {
+    entry.link.forEach((link: OpdsLink) => {
       if (link.rel === "http://opds-spec.org/acquisition/open-access") {
-        const type = link.type.split("+")[0];
+        const type = link.type?.split("+")[0];
         if (type === "application/epub") downloadLinks.epub = link.href;
         if (type === "application/fb2") downloadLinks.fb2 = link.href;
         if (type === "application/x-mobipocket-ebook") downloadLinks.mobi = link.href;
@@ -31,7 +58,7 @@ function parseOpdsBook(entry: any): OpdsBook {
 
   // Parse cover image
   const coverLink = Array.isArray(entry.link)
-    ? entry.link.find((link: any) => link.rel === "http://opds-spec.org/image")
+    ? entry.link.find((link: OpdsLink) => link.rel === "http://opds-spec.org/image")
     : null;
   const coverUrl = coverLink ? coverLink.href : undefined;
 
@@ -42,7 +69,7 @@ function parseOpdsBook(entry: any): OpdsBook {
       uri: entry.author.uri,
     },
     categories: Array.isArray(entry.category)
-      ? entry.category.map((cat: any) => ({
+      ? entry.category.map((cat: OpdsCategory) => ({
           term: cat.term,
           label: cat.label,
         }))
