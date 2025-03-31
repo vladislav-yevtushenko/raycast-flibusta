@@ -20,21 +20,21 @@ export function BookListItem({ book }: BookListItemProps) {
       accessories={[{ text: book.format }]}
       actions={
         <ActionPanel>
-          {book.downloadLinks.fb2 && (
-            <ActionPanel.Section>
-              <Action
-                title="Download FB2"
-                icon={Icon.Download}
-                onAction={() => handleDownload(book.downloadLinks.fb2!, "fb2")}
-              />
-            </ActionPanel.Section>
-          )}
           {book.downloadLinks.epub && (
             <ActionPanel.Section title="Download Options">
               <Action
                 title="Download EPUB"
                 icon={Icon.Download}
                 onAction={() => handleDownload(book.downloadLinks.epub!, "epub")}
+              />
+            </ActionPanel.Section>
+          )}
+          {book.downloadLinks.fb2 && (
+            <ActionPanel.Section>
+              <Action
+                title="Download FB2"
+                icon={Icon.Download}
+                onAction={() => handleDownload(book.downloadLinks.fb2!, "fb2")}
               />
             </ActionPanel.Section>
           )}

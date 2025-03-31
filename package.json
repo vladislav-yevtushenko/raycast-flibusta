@@ -6,16 +6,16 @@
   "icon": "extension-icon.png",
   "author": "VladYevt",
   "categories": [
-    "Fun",
+    "Web",
     "Other"
   ],
   "license": "MIT",
   "commands": [
     {
       "name": "flibusta",
-      "title": "flibusta",
-      "subtitle": "book",
-      "description": "Flibusta search",
+      "title": "Flibusta Search",
+      "subtitle": "books",
+      "description": "Search for books on Flibusta site",
       "mode": "view"
     }
   ],

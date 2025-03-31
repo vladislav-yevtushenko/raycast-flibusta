@@ -22,8 +22,8 @@ function parseOpdsBook(entry: any): OpdsBook {
     entry.link.forEach((link: any) => {
       if (link.rel === "http://opds-spec.org/acquisition/open-access") {
         const type = link.type.split("+")[0];
-        if (type === "application/fb2") downloadLinks.fb2 = link.href;
         if (type === "application/epub") downloadLinks.epub = link.href;
+        if (type === "application/fb2") downloadLinks.fb2 = link.href;
         if (type === "application/x-mobipocket-ebook") downloadLinks.mobi = link.href;
       }
     });
