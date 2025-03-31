@@ -38,4 +38,4 @@ export interface OpdsSearchResponse {
   entries: OpdsBook[];
 }
 
-export type SearchStatus = "idle" | "searching" | "found" | "not_found"; 
+export type SearchStatus = "idle" | "searching" | "found" | "not_found";

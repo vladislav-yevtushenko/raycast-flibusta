@@ -23,7 +23,7 @@ export function BookListItem({ book }: BookListItemProps) {
           {book.downloadLinks.epub && (
             <ActionPanel.Section title="Download Options">
               <Action
-                title="Download EPUB"
+                title="Download Epub"
                 icon={Icon.Download}
                 onAction={() => handleDownload(book.downloadLinks.epub!, "epub")}
               />
@@ -32,7 +32,7 @@ export function BookListItem({ book }: BookListItemProps) {
           {book.downloadLinks.fb2 && (
             <ActionPanel.Section>
               <Action
-                title="Download FB2"
+                title="Download Fb2"
                 icon={Icon.Download}
                 onAction={() => handleDownload(book.downloadLinks.fb2!, "fb2")}
               />
@@ -41,7 +41,7 @@ export function BookListItem({ book }: BookListItemProps) {
           {book.downloadLinks.mobi && (
             <ActionPanel.Section>
               <Action
-                title="Download MOBI"
+                title="Download Mobi"
                 icon={Icon.Download}
                 onAction={() => handleDownload(book.downloadLinks.mobi!, "mobi")}
               />
