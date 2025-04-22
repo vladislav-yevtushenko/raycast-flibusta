@@ -48,13 +48,11 @@ const parser = new xml2js.Parser({
   valueProcessors: [xml2js.processors.parseBooleans, xml2js.processors.parseNumbers],
 });
 
-
 function parseOpdsBook(entry: OpdsEntry): OpdsBook {
   const downloadLinks: OpdsBook["downloadLinks"] = {};
-  
+
   const links = Array.isArray(entry.link) ? entry.link : [entry.link];
-  
-  // Extract download links from entry
+
   if (links) {
     links.forEach((link: OpdsLink) => {
       if (link.rel === "http://opds-spec.org/acquisition/open-access") {
@@ -79,9 +77,9 @@ function parseOpdsBook(entry: OpdsEntry): OpdsBook {
     },
     categories: Array.isArray(entry.category)
       ? entry.category.map((cat: OpdsCategory) => ({
-        term: cat.term,
-        label: cat.label,
-      }))
+          term: cat.term,
+          label: cat.label,
+        }))
       : entry.category
         ? [{ term: entry.category.term, label: entry.category.label }]
         : [],
@@ -94,23 +92,22 @@ function parseOpdsBook(entry: OpdsEntry): OpdsBook {
   };
 }
 
-
 async function fetchOpdsXml(url: string, signal?: AbortSignal): Promise<string> {
   try {
-    const response = await axios.get(url, { 
+    const response = await axios.get(url, {
       headers: defaultHeaders,
-      signal: signal
+      signal: signal,
     });
     return response.data;
   } catch (error) {
     if (axios.isCancel(error)) {
       throw new Error("Request was cancelled");
     }
-    
+
     if (axios.isAxiosError(error)) {
       throw new Error(`Failed to fetch OPDS data: ${error.message}`);
     }
-    
+
     throw error;
   }
 }
@@ -123,14 +120,14 @@ export async function searchBooks(query: string, signal?: AbortSignal): Promise<
   try {
     const url = `${baseSiteUrl}/opds/search?searchType=books&searchTerm=${encodeURIComponent(query)}`;
     const xml = await fetchOpdsXml(url, signal);
-    const result = await parser.parseStringPromise(xml) as OpdsFeed;
+    const result = (await parser.parseStringPromise(xml)) as OpdsFeed;
 
     const feed = result.feed;
-    
+
     if (!feed || !feed.entry) {
       return [];
     }
-    
+
     const entries = Array.isArray(feed.entry) ? feed.entry : [feed.entry];
     return entries.map(parseOpdsBook);
   } catch (error) {

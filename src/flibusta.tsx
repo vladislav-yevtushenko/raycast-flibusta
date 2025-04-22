@@ -4,7 +4,7 @@ import { OpdsBook, SearchStatus } from "./types";
 import { BookListItem } from "./components/BookListItem";
 import { searchBooks } from "./services/opdsService";
 
- /* Custom hook to debounce a value with a specified delay
+/* Custom hook to debounce a value with a specified delay
  *
  * @param value The value to debounce
  * @param delay The delay in milliseconds
@@ -12,17 +12,17 @@ import { searchBooks } from "./services/opdsService";
  */
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
-    
+
     return () => {
       clearTimeout(handler);
     };
   }, [value, delay]);
-  
+
   return debouncedValue;
 }
 
@@ -31,13 +31,13 @@ export default function Command() {
   const [books, setBooks] = useState<OpdsBook[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
-  
+
   const debouncedSearchText = useDebounce(searchText, 500);
-  
+
   const abortControllerRef = useRef<AbortController | null>(null);
-  
+
   const isInitialRender = useRef(true);
-  
+
   useEffect(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -45,7 +45,6 @@ export default function Command() {
     }
   }, [searchText]);
 
-  
   const performSearch = useCallback(async (query: string) => {
     if (!query || query.length === 0) {
       setBooks([]);
@@ -55,7 +54,7 @@ export default function Command() {
 
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
-    
+
     setIsLoading(true);
     setSearchStatus("searching");
 
@@ -67,11 +66,11 @@ export default function Command() {
       });
 
       const results = await searchBooks(query, abortController.signal);
-      
+
       if (abortController.signal.aborted) {
         return;
       }
-      
+
       setBooks(results);
 
       if (results.length > 0) {
@@ -93,11 +92,11 @@ export default function Command() {
       if (abortController.signal.aborted) {
         return;
       }
-      
+
       if (!(error instanceof DOMException && error.name === "AbortError")) {
         setSearchStatus("not_found");
         const errorMessage = error instanceof Error ? error.message : String(error);
-        
+
         await showToast({
           style: Toast.Style.Failure,
           title: "Error",
@@ -110,13 +109,13 @@ export default function Command() {
       }
     }
   }, []);
-  
+
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
       return;
     }
-    
+
     if (debouncedSearchText) {
       performSearch(debouncedSearchText);
     } else {
@@ -134,10 +133,10 @@ export default function Command() {
       throttle
     >
       {searchStatus === "not_found" ? (
-        <List.EmptyView 
-          icon={Icon.ExclamationMark} 
-          title="No Results Found" 
-          description="Try a different search term" 
+        <List.EmptyView
+          icon={Icon.ExclamationMark}
+          title="No Results Found"
+          description="Try a different search term"
         />
       ) : searchStatus === "idle" ? (
         <List.EmptyView
@@ -146,9 +145,7 @@ export default function Command() {
           description="Start typing to search for books on Flibusta"
         />
       ) : (
-        books.map((book, index) => (
-          <BookListItem key={index} book={book} />
-        ))
+        books.map((book, index) => <BookListItem key={index} book={book} />)
       )}
     </List>
   );
